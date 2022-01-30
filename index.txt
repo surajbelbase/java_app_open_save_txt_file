@@ -1,0 +1,117 @@
+package PACKAGE_NAME;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+
+public class SuperDuper extends JFrame implements ActionListener {
+
+    private JButton read = new JButton("Open");
+    private JButton write = new JButton("Save");
+    private JTextField textField = new JTextField(20);
+    private JLabel label = new JLabel("File : ");
+    private JTextArea textArea = new JTextArea();
+    private JPanel iw = new JPanel();
+
+    public SuperDuper(){
+
+        super("Super Duper app!..");    //title for menu bar of app
+
+        iw.setLayout(new GridLayout(2,2,1,1));  //Setting up number of rows and cols for below actions
+        iw.add(read);       //adding open button
+        iw.add(write);      //adding save button
+        iw.add(label);      //adding label
+        iw.add(textField);  //adding textField
+//        iw.add(textArea);
+        this.getContentPane().setLayout(new BorderLayout());
+
+
+        //getContentPane binds and displays various JFrame components
+        this.getContentPane().add("North",iw);
+        this.getContentPane().add(new JScrollPane(textArea));
+        this.getContentPane().add("Center",textArea);
+
+        //setting background color for JPanel inside and outside
+        iw.setBackground(Color.GRAY);
+        textArea.setBackground(Color.LIGHT_GRAY);
+
+        textArea.setFont(new Font("Monaco",Font.ITALIC,23));
+        textField.setFont(new Font("Monaco",Font.BOLD,12));
+
+        //adding actions to buttons - addActionListener
+        //OPEN and SAVE are two button used in this Frame with objects as : read and write respectively
+        read.addActionListener(this);
+        write.addActionListener(this);
+
+    }
+
+    //creating main function
+    public static void main(String[] args) {
+        SuperDuper obj = new SuperDuper();
+        obj.setSize(480,600);
+        obj.setVisible(true);
+        obj.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    //method to read the file from the provided directory
+    private void readTextFile(JTextArea textArea, String fileName){
+
+        try{    //generally we need to provide code dealing with io file in try/catch block
+
+            BufferedReader rd = new BufferedReader(new FileReader(fileName));
+            String line = rd.readLine();        //reads any of the line(first line)
+            while(line!=null){      //initiates the loop if the provided line is not empty
+
+                textArea.append(line + "\n");       //adds each line to the textArea
+                line = rd.readLine();               //reads new line
+
+            }
+            rd.close();                     //it's a good practice to close BufferedIO Stream
+
+
+
+        } catch (FileNotFoundException e) {
+            System.out.println("IOERROR : File not found : "+fileName+"\n");
+            e.printStackTrace();
+        } catch (IOException e) {
+
+            System.out.println("IO ERROR : "+e.getMessage()+"\n");
+            e.printStackTrace();
+        }
+
+    }
+
+    //function to write file content into the text File
+    private void writeTextFile(JTextArea textArea, String fileName){
+
+        try{
+
+            FileWriter outStream = new FileWriter(fileName);
+            outStream.write(textArea.getText());
+            outStream.close();
+
+        } catch (IOException e) {
+            System.out.println("IOERROR: "+e.getMessage()+"\n");
+            e.printStackTrace();
+        }
+
+    }
+
+    public void actionPerformed(ActionEvent evt){
+
+        String fileName = textField.getText();          //fileName stores the text received by textField
+        if(evt.getSource() == read){
+
+            readTextFile(textArea,fileName);
+
+        }else{
+
+            writeTextFile(textArea,fileName);
+
+        }
+
+    }
+
+}
